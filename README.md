@@ -4,4 +4,6 @@
 
 ### create new resource
 
-`nest res pokemon --no-spec`
+```
+nest res pokemon --no-spec
+```
