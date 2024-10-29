@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 import { Pokemon } from './entities/pokemon.entity';
@@ -12,8 +16,20 @@ export class PokemonService {
     private readonly pokenmonModel: Model<Pokemon>,
   ) {}
   async create(createPokemonDto: CreatePokemonDto) {
-    createPokemonDto.name = createPokemonDto.name.toUpperCase();
-    return await this.pokenmonModel.create(createPokemonDto);
+    try {
+      createPokemonDto.name = createPokemonDto.name.toUpperCase();
+      return await this.pokenmonModel.create(createPokemonDto);
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new BadRequestException(
+          `Pokemon already exists in the database ${JSON.stringify(error.keyValue)}`,
+        );
+      }
+      console.log(error);
+      throw new InternalServerErrorException(
+        'Error creating pokemon - check logs',
+      );
+    }
   }
 
   findAll() {
