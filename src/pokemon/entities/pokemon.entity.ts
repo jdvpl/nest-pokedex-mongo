@@ -17,6 +17,7 @@ export class Pokemon extends Document {
     index: true,
   })
   trainer: string;
+  @Prop({ type: [String] })
   abilities: string[];
 }
 export const PockemonSchema = SchemaFactory.createForClass(Pokemon);

@@ -9,6 +9,7 @@ import {
 } from 'class-validator';
 
 export class CreatePokemonDto {
+  @IsString()
   name: string;
   @IsInt()
   @IsPositive()
