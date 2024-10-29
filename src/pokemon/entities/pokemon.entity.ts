@@ -8,7 +8,6 @@ export class Pokemon extends Document {
     index: true,
   })
   name: string;
-  type: string;
   @Prop({
     index: true,
     max: 10,
@@ -19,9 +18,5 @@ export class Pokemon extends Document {
   })
   trainer: string;
   abilities: string[];
-  @Prop({
-    index: true,
-  })
-  dateCaught: Date;
 }
 export const PockemonSchema = SchemaFactory.createForClass(Pokemon);
