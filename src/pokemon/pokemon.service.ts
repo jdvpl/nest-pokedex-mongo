@@ -56,8 +56,36 @@ export class PokemonService {
     }
   }
 
-  update(id: number, updatePokemonDto: UpdatePokemonDto) {
-    return `This action updates a #${id} pokemon`;
+  async update(term: string, updatePokemonDto: UpdatePokemonDto) {
+    try {
+      const query = isValidObjectId(term)
+        ? { _id: term }
+        : { name: term.toUpperCase().trim() };
+      const pokemon = await this.pokenmonModel.findOne(query);
+      if (!pokemon) {
+        throw new BadRequestException('Pokemon not found');
+      }
+      updatePokemonDto.name = updatePokemonDto.name.toUpperCase();
+      return await this.pokenmonModel.findOneAndUpdate(
+        query,
+        updatePokemonDto,
+        {
+          new: true,
+        },
+      );
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      if (error.code === 11000) {
+        throw new BadRequestException(
+          `Pokemon already exists in the database ${JSON.stringify(error.keyValue)}`,
+        );
+      }
+      throw new InternalServerErrorException(
+        `Error updating pokemon - check logs ${JSON.stringify(error)}`,
+      );
+    }
   }
 
   remove(id: number) {
