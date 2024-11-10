@@ -31,6 +31,24 @@ export class PokemonService {
       );
     }
   }
+  async insertMany(createPokemonDto: CreatePokemonDto[]) {
+    try {
+      createPokemonDto.forEach((pokemon) => {
+        pokemon.name = pokemon.name.toUpperCase();
+      });
+      return await this.pokenmonModel.insertMany(createPokemonDto);
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new BadRequestException(
+          `Pokemon already exists in the database ${JSON.stringify(error.keyValue)}`,
+        );
+      }
+      console.log(error);
+      throw new InternalServerErrorException(
+        'Error creating pokemon - check logs',
+      );
+    }
+  }
 
   findAll() {
     return `This action returns all pokemon`;
