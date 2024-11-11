@@ -1,23 +1,24 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import axios, { AxiosInstance } from 'axios';
 import { AbilitiesResponse } from './interfaces/AbilityResponse';
 import { PokemonService } from 'src/pokemon/pokemon.service';
 import { PokemonResponse } from './interfaces/pokemonResponse';
 import { CreatePokemonDto } from 'src/pokemon/dto/create-pokemon.dto';
 import { getRandomNumber, getRandomTrainer } from './utils/randomNumber';
+import { AxiosAdapter } from 'src/common/adapters/axios.adapter';
 
 @Injectable()
 export class SeedService {
-  private readonly axios: AxiosInstance = axios;
-
-  constructor(private readonly pokemonService: PokemonService) {}
+  constructor(
+    private readonly pokemonService: PokemonService,
+    private readonly http: AxiosAdapter,
+  ) {}
   async executeSeed() {
     try {
-      const [{ data }, { data: response }] = await Promise.all([
-        this.axios.get<AbilitiesResponse>(
+      const [data, response] = await Promise.all([
+        this.http.get<AbilitiesResponse>(
           'https://pokeapi.co/api/v2/ability/?offset=0&limit=400',
         ),
-        this.axios.get<PokemonResponse>(
+        this.http.get<PokemonResponse>(
           'https://pokeapi.co/api/v2/pokemon/?offset=0&limit=400',
         ),
       ]);
