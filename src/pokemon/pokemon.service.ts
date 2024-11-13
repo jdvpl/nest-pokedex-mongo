@@ -8,6 +8,7 @@ import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 import { Pokemon } from './entities/pokemon.entity';
 import { isValidObjectId, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { PaginationDto } from 'src/common/dto/paginationDto';
 
 @Injectable()
 export class PokemonService {
@@ -50,8 +51,16 @@ export class PokemonService {
     }
   }
 
-  findAll() {
-    return `This action returns all pokemon`;
+  findAll(queryParameters: PaginationDto) {
+    const { limit = 10, offset = 0 } = queryParameters;
+    return this.pokenmonModel
+      .find()
+      .limit(limit)
+      .skip(offset)
+      .sort({
+        name: 1,
+      })
+      .select('-__v');
   }
 
   async findOne(term: string) {
